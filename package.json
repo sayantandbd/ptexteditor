@@ -1,0 +1,41 @@
+{
+  "name": "ptexteditor",
+  "version": "0.0.1",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "watch": "nodemon --exec electron .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^36.4.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.binjaratech.ptexteditor",
+    "productName": "PtextEditor",
+    "files": [
+      "dist/",
+      "main.js",
+      "preload.js",
+      "assets/"
+    ],
+    "mac": {
+      "icon": "assets/icon.icns",
+      "identity": null
+    },
+    "win": {
+      "icon": "assets/icon.ico"
+    },
+    "linux": {
+      "icon": "assets/icon.png"
+    }
+  }
+
+}
