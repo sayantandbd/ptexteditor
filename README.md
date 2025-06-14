@@ -13,7 +13,7 @@ A clean and modern notepad application built using Electron, offering a tabbed i
 
 | Platform | Installer |
 |----------|-----------|
-| 🖥️ **macOS** | [⬇️ Download `.dmg`]([https://github.com/your-username/modern-notepad/releases/latest/download/Modern-Notepad.dmg](https://github.com/sayantandbd/ptexteditor/releases/download/v0.0.1-alpha/PtextEditor-0.0.1-arm64.dmg)) |
+| 🖥️ **macOS** | [⬇️ Download `.dmg`](https://github.com/your-username/modern-notepad/releases/latest/download/Modern-Notepad.dmg) |
 | 🖼️ **Windows** | comming soon |
 | 🐧 **Linux** | comming soon |
 
