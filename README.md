@@ -14,8 +14,8 @@ A clean and modern notepad application built using Electron, offering a tabbed i
 | Platform | Installer |
 |----------|-----------|
 | 🖥️ **macOS** | [⬇️ Download `.dmg`](https://github.com/sayantandbd/ptexteditor/releases/download/v0.0.1-alpha/PtextEditor-0.0.1-arm64.dmg) |
-| 🖼️ **Windows** | comming soon |
-| 🐧 **Linux** | comming soon |
+| 🖼️ **Windows** | coming soon |
+| 🐧 **Linux** | coming soon |
 
 ---
 
@@ -50,7 +50,7 @@ A clean and modern notepad application built using Electron, offering a tabbed i
 ## 🧰 Getting Started (Dev Mode)
 
 ```bash
-git clone [https://github.com/your-username/modern-notepad.git](https://github.com/sayantandbd/ptexteditor.git)
-cd modern-notepad
+git clone https://github.com/sayantandbd/ptexteditor.git
+cd ptexteditor
 npm install
 npm run start
