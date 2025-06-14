@@ -10,8 +10,8 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1000,
     height: 700,
-    //frame:false,
-    //titleBarStyle: 'hidden', // for macOS
+    frame:false,
+    titleBarStyle: 'hidden', // for macOS
     icon: path.join(__dirname, 'assets', 'icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -35,6 +35,19 @@ function createWindow() {
 
 function setupMenu() {
   const template = [
+    {
+      label: 'PTextEditor',
+      submenu: [
+        {
+          label: 'About pTextEditor',
+          click: async () => {
+            require('electron').shell.openExternal('https://github.com/sayantandbd/ptexteditor');
+          },
+        },
+        { type: 'separator' },
+        { role: 'Quit' },
+      ]
+    },
     {
       label: 'File',
       submenu: [
@@ -74,10 +87,10 @@ function setupMenu() {
         { role: 'selectAll' },
       ],
     },
-    {
-      label: 'View',
-      submenu: [{ role: 'reload' }, { role: 'toggledevtools' }],
-    },
+    // {
+    //   label: 'View',
+    //   submenu: [{ role: 'reload' }, { role: 'toggledevtools' }],
+    // },
     {
       label: 'Window',
       role: 'window',

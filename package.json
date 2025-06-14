@@ -15,7 +15,8 @@
   "license": "ISC",
   "devDependencies": {
     "electron": "^36.4.0",
-    "electron-builder": "^26.0.12"
+    "electron-builder": "^26.0.12",
+    "nodemon": "^3.1.10"
   },
   "build": {
     "appId": "com.binjaratech.ptexteditor",
@@ -23,6 +24,7 @@
     "files": [
       "dist/",
       "main.js",
+      "renderer/",
       "preload.js",
       "assets/"
     ],
@@ -37,5 +39,4 @@
       "icon": "assets/icon.png"
     }
   }
-
 }

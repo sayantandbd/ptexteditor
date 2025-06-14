@@ -2,8 +2,8 @@ let tabId = 0;
 const tabs = [];
 let tempDir;
 
-function createTab({ content = '', filePath = null }) {
-  const id = tabId++;
+function createTab({ content = '', filePath = null, id = 0,tempPath = '' }) {
+  id = tabId++;
   const name = filePath ? filePath.split('/').pop() : `Untitled ${id}`;
 
   // --- Create tab button ---
@@ -72,29 +72,39 @@ function createTab({ content = '', filePath = null }) {
   textarea.value = content;
   tab.appendChild(textarea);
   document.getElementById('tabs').appendChild(tab);
-  const tabData = { id, textarea, tab, tabButton, filePath };
+  const tabData = { id, textarea, tab, tabButton, filePath, tempPath };
   tabs.push(tabData);
   switchToTab(id);
   setTimeout(() => textarea.focus(), 0);
 
   // file name update
+  if (!filePath) tabNamming(tabData, tabButton, textarea);
   textarea.addEventListener('input', () => {
     if (!filePath) { // Only for new/unsaved files
-      const updatedTitle = getTitleFromContent(textarea.value);
-      tabButton.innerHTML = `${updatedTitle} <span class="close-btn">×</span>`;
-
-      // regain
-      tabButton.querySelector('.close-btn').addEventListener('click', (e) => {
-        e.stopPropagation();
-        closeTab(id);
-      });
+      tabNamming(tabData, tabButton, textarea);
     }
   });
 
   //auto save
   setupAutosave(tabData, textarea);
 
-  
+  saveTabMeta(); // store metadata for reopening
+}
+
+function tabNamming(tabData, tabButton) {
+
+  let oldTitle = tabData.title;
+  tabData.title = getTitleFromContent(tabData.textarea.value);
+  if(oldTitle!=tabData.title)
+  {
+    tabButton.innerHTML = `${tabData.title} <span class="close-btn">×</span>`;
+    // regain
+    tabButton.querySelector('.close-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeTab(tabData.id);
+    });
+  }
+
 }
 
 
@@ -104,6 +114,8 @@ function switchToTab(id) {
     tab.style.display = isActive ? 'block' : 'none';
     tabButton.classList.toggle('active', isActive);
   });
+
+  saveTabMeta(); // store metadata for reopening
 }
 
 function closeTab(id) {
@@ -153,10 +165,12 @@ window.api.onFileOpened(({ filePath, content }) => {
 
 function saveAs(tab) {
   const content = tab.textarea.value;
-  window.api.saveAsFile(content).then(filePath => {
+  window.api.saveAsFile(content).then((filePath, content) => {
     if (filePath) {
-      tab.tab.dataset.filePath = filePath;
+      tab.tab.dataset.filePath = tab.filePath = filePath;
       tab.tabButton.firstChild.textContent = filePath.split('/').pop();
+      console.log(tab);
+      saveTabMeta();
     }
   });
 }
@@ -192,7 +206,6 @@ window.addEventListener('drop', async (e) => {
       const filePath = file.path;
 
       if (!filePath || typeof filePath !== 'string') {
-        alert('File path not available. Please grant file access permission to the app.');
         console.error('Invalid file path:', filePath);
         continue;
       }
@@ -224,7 +237,7 @@ window.addEventListener('drop', async (e) => {
 function getTitleFromContent(content) {
   if (!content) return 'Untitled';
 
-  const firstLine = content.split('\n')[0].trim();
+  const firstLine = content.split('\n')[0].trim().slice(0, 25);
   const words = firstLine.split(/\s+/).slice(0, 5); // max 5 words
   return words.join(' ') || 'Untitled';
 }
@@ -234,32 +247,32 @@ function getTitleFromContent(content) {
 
 function setupAutosave(tabData, textarea) {
   let lastSavedContent = '';
+  let debounceTimer;
 
-  console.log(tabData, textarea);
+  textarea.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
 
-  setInterval(() => {
-    const content = textarea.value;
-    const lines = content.split('\n');
+    debounceTimer = setTimeout(() => {
+      const content = textarea.value;
+      const lines = content.split('\n');
 
-    if (lines.length < 5 || content === lastSavedContent) return;
+      if (lines.length < 5 || content === lastSavedContent) return;
 
-    lastSavedContent = content;
+      lastSavedContent = content;
 
-    const filePath = tabData.filePath;
+      const filePath = tabData.filePath;
 
-    if (filePath) {
-      // Save to actual file
-      window.api.saveFile(filePath, content);
-    } else {
-      // Save to temporary file
-      if (!tabData.tempPath) {
-        tabData.tempPath = `${tempDir}/temp-${tabData.id}.txt`;
+      if (filePath) {
+        window.api.saveFile(filePath, content);
+      } else {
+        if (!tabData.tempPath) {
+          tabData.tempPath = `${tempDir}/temp-${tabData.id}.txt`;
+        }
+        window.api.saveFile(tabData.tempPath, content);
+        saveTabMeta();
       }
-      window.api.saveFile(tabData.tempPath, content);
-    }
-
-    saveTabMeta(); // store for reopen
-  }, 3000); // autosave every 3s
+    }, 1000); // debounce time: 1 second after typing stops
+  });
 }
 
 // restore feature
@@ -274,7 +287,6 @@ function saveTabMeta() {
 
 function restoreTabs() {
   const stored = JSON.parse(localStorage.getItem('openTabs') || '[]');
-  console.log(stored);
   stored.forEach(async tabMeta => {
     const pathToLoad = tabMeta.filePath || tabMeta.tempPath;
     if (!pathToLoad) return;
@@ -297,19 +309,4 @@ window.addEventListener('DOMContentLoaded', () => {
     // open blank tab
     createTab({});
   };
-});
-
-
-// title bar
-
-document.getElementById('min-btn').addEventListener('click', () => {
-  window.electronAPI.minimize();
-});
-
-document.getElementById('max-btn').addEventListener('click', () => {
-  window.electronAPI.maximizeOrRestore();
-});
-
-document.getElementById('close-btn').addEventListener('click', () => {
-  window.electronAPI.close();
 });
