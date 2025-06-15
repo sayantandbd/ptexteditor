@@ -1,6 +1,6 @@
 {
   "name": "ptexteditor",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "main.js",
   "scripts": {
@@ -8,7 +8,9 @@
     "watch": "nodemon --exec electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "dist:mac": "electron-builder --mac",
+    "dist:win": "electron-builder --win"
   },
   "keywords": [],
   "author": "",
@@ -30,10 +32,27 @@
     ],
     "mac": {
       "icon": "assets/icon.icns",
-      "identity": null
+      "minimumSystemVersion": "10.13",
+      "identity": null,
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "category": "public.app-category.productivity"
     },
     "win": {
-      "icon": "assets/icon.ico"
+      "icon": "assets/icon.ico",
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "pTextEditor"
     },
     "linux": {
       "icon": "assets/icon.png"
