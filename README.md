@@ -13,7 +13,7 @@ A clean and modern notepad application built using Electron, offering a tabbed i
 
 | Platform | Installer |
 |----------|-----------|
-| 🖥️ **macOS** | [⬇️ Download for Apple Chip](https://github.com/sayantandbd/ptexteditor/releases/download/v0.0.2-alpha/PtextEditor-0.0.2-arm64.dmg) [⬇️ Download for Intel Chip .dmg](https://github.com/sayantandbd/ptexteditor/releases/download/v0.0.2-alpha/PtextEditor-0.0.2-arm64.dmg) |
+| 🖥️ **macOS** | [⬇️ Download for Apple Chip](https://github.com/sayantandbd/ptexteditor/releases/download/v0.0.2-alpha/PtextEditor-0.0.2-arm64.dmg) [⬇️ Download for Intel Chip .dmg](https://github.com/sayantandbd/ptexteditor/releases/download/v0.0.2-alpha/PtextEditor-0.0.2.dmg) |
 | 🖼️ **Windows** |  [⬇️ Download for Windows](https://github.com/sayantandbd/ptexteditor/releases/download/v0.0.2-alpha/PtextEditor.Setup.0.0.2.exe) |
 | 🐧 **Linux** | coming soon |
 
