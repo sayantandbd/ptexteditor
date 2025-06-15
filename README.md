@@ -17,6 +17,38 @@ A clean and modern notepad application built using Electron, offering a tabbed i
 | 🖼️ **Windows** |  [⬇️ Download for Windows](https://github.com/sayantandbd/ptexteditor/releases/download/v0.0.2-alpha/PtextEditor.Setup.0.0.2.exe) |
 | 🐧 **Linux** | coming soon |
 
+# How to Allow the App on macOS (Gatekeeper Exception)
+
+If macOS blocks your downloaded app, follow these steps to permanently allow it:
+
+## 🛠 Steps to Add the App as an Exception
+
+1. **Open System Settings**  
+   Click the Apple menu  → `System Settings`.
+
+2. **Go to Privacy & Security**  
+   Scroll down and click `Privacy & Security` in the sidebar.
+
+3. **Scroll to the Security Section**  
+   Near the bottom of the screen, find the **Security** section.
+
+4. **Allow the Blocked App**  
+   If you see a message like:  
+   > "App was blocked from use because it is not from an identified developer"  
+   Click the `Open Anyway` button.
+
+5. **Authenticate if Required**  
+   You may need to click the 🔒 lock icon and enter your Mac password to approve the change.
+
+6. **Launch the App Normally**  
+   Now you can open the app by simply double-clicking it.  
+   macOS will remember your choice and not block it again.
+
+---
+
+📌 _Note: This only needs to be done once per app version._
+
+
 ---
 
 ## ✨ Features
