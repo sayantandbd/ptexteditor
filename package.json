@@ -24,11 +24,16 @@
     "appId": "com.binjaratech.ptexteditor",
     "productName": "PtextEditor",
     "files": [
-      "dist/",
       "main.js",
       "renderer/",
       "preload.js",
-      "assets/"
+      "assets/",
+      "!node_modules/.cache",
+      "!node_modules/*/test",
+      "!**/*.map",
+      "!src",
+      "!tests",
+      "!*.md"
     ],
     "mac": {
       "icon": "assets/icon.icns",
@@ -56,6 +61,8 @@
     },
     "linux": {
       "icon": "assets/icon.png"
-    }
+    },
+    "asar": true,
+    "asarUnpack": ["**/native-addon.node"]
   }
 }
