@@ -2,7 +2,8 @@ let tabId = 0;
 const tabs = [];
 let tempDir;
 
-function createTab({ content = '', filePath = null, id = 0,tempPath = '' }) {
+// migraged
+function createTab({ content = '', filePath = null, id = 0, tempPath = '' }) {
   id = tabId++;
   const name = filePath ? filePath.split('/').pop() : `Untitled ${id}`;
 
@@ -29,8 +30,8 @@ function createTab({ content = '', filePath = null, id = 0,tempPath = '' }) {
     const toId = parseInt(tabButton.dataset.id);
     if (fromId === toId) return;
 
-    const fromTab = tabs.find(t => t.id === fromId);
-    const toTab = tabs.find(t => t.id === toId);
+    const fromTab = tabs.find((t) => t.id === fromId);
+    const toTab = tabs.find((t) => t.id === toId);
 
     const tabBar = document.getElementById('tab-bar');
     tabBar.insertBefore(fromTab.tabButton, toTab.tabButton);
@@ -38,8 +39,8 @@ function createTab({ content = '', filePath = null, id = 0,tempPath = '' }) {
     const tabsContainer = document.getElementById('tabs');
     tabsContainer.insertBefore(fromTab.tab, toTab.tab);
 
-    const fromIndex = tabs.findIndex(t => t.id === fromId);
-    const toIndex = tabs.findIndex(t => t.id === toId);
+    const fromIndex = tabs.findIndex((t) => t.id === fromId);
+    const toIndex = tabs.findIndex((t) => t.id === toId);
     const [moved] = tabs.splice(fromIndex, 1);
     tabs.splice(toIndex, 0, moved);
   });
@@ -80,7 +81,8 @@ function createTab({ content = '', filePath = null, id = 0,tempPath = '' }) {
   // file name update
   if (!filePath) tabNamming(tabData, tabButton, textarea);
   textarea.addEventListener('input', () => {
-    if (!filePath) { // Only for new/unsaved files
+    if (!filePath) {
+      // Only for new/unsaved files
       tabNamming(tabData, tabButton, textarea);
     }
   });
@@ -90,13 +92,11 @@ function createTab({ content = '', filePath = null, id = 0,tempPath = '' }) {
 
   saveTabMeta(); // store metadata for reopening
 }
-
+// migrated
 function tabNamming(tabData, tabButton) {
-
   let oldTitle = tabData.title;
   tabData.title = getTitleFromContent(tabData.textarea.value);
-  if(oldTitle!=tabData.title)
-  {
+  if (oldTitle != tabData.title) {
     tabButton.innerHTML = `${tabData.title} <span class="close-btn">×</span>`;
     // regain
     tabButton.querySelector('.close-btn').addEventListener('click', (e) => {
@@ -104,10 +104,9 @@ function tabNamming(tabData, tabButton) {
       closeTab(tabData.id);
     });
   }
-
 }
 
-
+// migrated
 function switchToTab(id) {
   tabs.forEach(({ id: tabId, tab, tabButton }) => {
     const isActive = tabId === id;
@@ -117,9 +116,9 @@ function switchToTab(id) {
 
   saveTabMeta(); // store metadata for reopening
 }
-
+// migrated
 function closeTab(id) {
-  const tabIndex = tabs.findIndex(t => t.id === id);
+  const tabIndex = tabs.findIndex((t) => t.id === id);
   if (tabIndex === -1) return;
 
   const tabData = tabs[tabIndex];
@@ -139,6 +138,7 @@ function closeTab(id) {
   saveTabMeta();
 }
 
+// migrated
 window.api.onMenu('menu-new', () => createTab({}));
 
 window.api.onMenu('menu-save', () => {
@@ -162,7 +162,7 @@ window.api.onMenu('menu-save-as', () => {
 window.api.onFileOpened(({ filePath, content }) => {
   createTab({ content, filePath });
 });
-
+// migrated
 function saveAs(tab) {
   const content = tab.textarea.value;
   window.api.saveAsFile(content).then((filePath, content) => {
@@ -174,18 +174,18 @@ function saveAs(tab) {
     }
   });
 }
-
+// migrated
 function getCurrentTab() {
   const tabElement = document.querySelector('.tab[style*="display: block"]');
   if (!tabElement) return null;
   const id = Number(tabElement.dataset.id);
-  return tabs.find(t => t.id === id);
+  return tabs.find((t) => t.id === id);
 }
 
 document.addEventListener('keydown', (e) => {
   if (e.ctrlKey && e.key === 'Tab') {
     e.preventDefault();
-    const currentIndex = tabs.findIndex(t => t.tab.style.display === 'block');
+    const currentIndex = tabs.findIndex((t) => t.tab.style.display === 'block');
     if (currentIndex !== -1) {
       const nextIndex = (currentIndex + 1) % tabs.length;
       switchToTab(tabs[nextIndex].id);
@@ -210,7 +210,7 @@ window.addEventListener('drop', async (e) => {
         continue;
       }
 
-      const alreadyOpen = tabs.some(t => t.tab.dataset.filePath === filePath);
+      const alreadyOpen = tabs.some((t) => t.tab.dataset.filePath === filePath);
       if (!alreadyOpen) {
         const content = await window.api.readFile(filePath);
         createTab({ content, filePath });
@@ -218,7 +218,6 @@ window.addEventListener('drop', async (e) => {
     }
   }
 });
-
 
 window.addEventListener('drop', async (e) => {
   e.preventDefault();
@@ -231,9 +230,8 @@ window.addEventListener('drop', async (e) => {
   }
 });
 
-
 // FILE NAME AUTOMATICALLY
-
+// migrated
 function getTitleFromContent(content) {
   if (!content) return 'Untitled';
 
@@ -242,9 +240,8 @@ function getTitleFromContent(content) {
   return words.join(' ') || 'Untitled';
 }
 
-
 // autosave
-
+// migrated
 function setupAutosave(tabData, textarea) {
   let lastSavedContent = '';
   let debounceTimer;
@@ -275,9 +272,10 @@ function setupAutosave(tabData, textarea) {
   });
 }
 
+// migrated
 // restore feature
 function saveTabMeta() {
-  const openTabs = tabs.map(t => ({
+  const openTabs = tabs.map((t) => ({
     id: t.id,
     filePath: t.filePath,
     tempPath: t.tempPath,
@@ -285,9 +283,10 @@ function saveTabMeta() {
   localStorage.setItem('openTabs', JSON.stringify(openTabs));
 }
 
+// migrated
 function restoreTabs() {
   const stored = JSON.parse(localStorage.getItem('openTabs') || '[]');
-  stored.forEach(async tabMeta => {
+  stored.forEach(async (tabMeta) => {
     const pathToLoad = tabMeta.filePath || tabMeta.tempPath;
     if (!pathToLoad) return;
     const content = await window.api.readFile(pathToLoad);
@@ -295,7 +294,7 @@ function restoreTabs() {
       content,
       filePath: tabMeta.filePath,
       id: tabMeta.id,
-      tempPath: tabMeta.tempPath
+      tempPath: tabMeta.tempPath,
     });
   });
   return stored.length;
@@ -304,9 +303,9 @@ function restoreTabs() {
 window.addEventListener('DOMContentLoaded', () => {
   tempDir = window.api.getTempDir();
   console.log(tempDir);
-  
-  if(restoreTabs()==0) {
+
+  if (restoreTabs() == 0) {
     // open blank tab
     createTab({});
-  };
+  }
 });

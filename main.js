@@ -1,53 +1,67 @@
-const { app, BrowserWindow, Menu, dialog, ipcMain } = require('electron');
-const path = require('path');
-const fs = require('fs');
-const os = require('os');
+import { app, BrowserWindow, Menu, dialog, ipcMain, shell } from 'electron';
+import path from 'path';
+import fs from 'fs';
+import os from 'os';
+import { fileURLToPath } from 'url';
+//import electronReload from 'electron-reload';
+
 let mainWindow;
 
-const TEMP_DIR = path.join(os.tmpdir(), 'ptexteditor-autosave');
+export const TEMP_DIR = path.join(os.tmpdir(), 'ptexteditor-autosave');
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// electronReload(__dirname, {
+//   electron: path.join(__dirname, 'node_modules', '.bin', 'electron'),
+// });
 
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1000,
     height: 700,
-    // frame:false,
+    // frame: false,
     // titleBarStyle: 'hidden', // for macOS
-    icon: path.join(__dirname, 'assets', 'icon.png'),
+    icon: path.join(__dirname, 'assets/icons', 'icon.png'),
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,
       nodeIntegration: false,
       enableRemoteModule: false, // optional
-      webSecurity: true,        // <-- Add this for drag-drop to access file.path
-      sandbox: false
+      webSecurity: true, // <-- Add this for drag-drop to access file.path
+      sandbox: false,
     },
   });
 
-  mainWindow.loadFile('renderer/index.html');
+  if (process.env.NODE_ENV === 'development') {
+    mainWindow.loadURL('http://localhost:8080');
+  } else {
+    mainWindow.loadFile('dist/index.html');
+  }
 
   mainWindow.webContents.on('will-navigate', (e) => e.preventDefault());
   mainWindow.webContents.on('new-window', (e) => e.preventDefault());
 
-  //mainWindow.webContents.openDevTools(); // Add this
+  mainWindow.webContents.openDevTools();
 
   setupMenu();
 }
 
 function setupMenu() {
   const template = [
-    // {
-    //   label: 'PTextEditor',
-    //   submenu: [
-    //     {
-    //       label: 'About pTextEditor',
-    //       click: async () => {
-    //         require('electron').shell.openExternal('https://github.com/sayantandbd/ptexteditor');
-    //       },
-    //     },
-    //     { type: 'separator' },
-    //     { role: 'Quit' },
-    //   ]
-    // },
+    {
+      label: 'PTextEditor',
+      submenu: [
+        {
+          label: 'About pTextEditor',
+          click: async () => {
+            shell.openExternal('https://github.com/sayantandbd/ptexteditor');
+          },
+        },
+        { type: 'separator' },
+        { role: 'quit' },
+      ],
+    },
     {
       label: 'File',
       submenu: [
@@ -87,10 +101,10 @@ function setupMenu() {
         { role: 'selectAll' },
       ],
     },
-    // {
-    //   label: 'View',
-    //   submenu: [{ role: 'reload' }, { role: 'toggledevtools' }],
-    // },
+    {
+      label: 'View',
+      submenu: [{ role: 'reload' }, { role: 'toggledevtools' }],
+    },
     {
       label: 'Window',
       role: 'window',
@@ -103,7 +117,7 @@ function setupMenu() {
         {
           label: 'Learn More',
           click: async () => {
-            require('electron').shell.openExternal('https://electronjs.org');
+            shell.openExternal('https://electronjs.org');
           },
         },
       ],
@@ -116,8 +130,11 @@ function setupMenu() {
 
 function openFile() {
   dialog
-    .showOpenDialog(mainWindow, { properties: ['openFile'], filters: [{ name: 'Text Files', extensions: ['txt'] }] })
-    .then(result => {
+    .showOpenDialog(mainWindow, {
+      properties: ['openFile'],
+      filters: [{ name: 'Text Files', extensions: ['txt'] }],
+    })
+    .then((result) => {
       if (!result.canceled) {
         const filePath = result.filePaths[0];
         const content = fs.readFileSync(filePath, 'utf-8');
@@ -125,10 +142,6 @@ function openFile() {
       }
     });
 }
-
-// ipcMain.handle('save-file', async (_, { filePath, content }) => {
-//   fs.writeFileSync(filePath, content, 'utf-8');
-// });
 
 ipcMain.handle('save-as-file', async (_, content) => {
   const { filePath } = await dialog.showSaveDialog(mainWindow, {
@@ -150,18 +163,11 @@ app.whenReady().then(() => {
   createWindow();
 });
 
-// ipcMain.handle('read-file', async (_, filePath) => {
-//   if (typeof filePath !== 'string') {
-//     throw new TypeError('Invalid file path passed to read-file');
-//   }
-//   return fs.readFileSync(filePath, 'utf-8');
-// });
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit();
+});
 
-//app.commandLine.appendSwitch("disable-gpu");
-
-//autosave
-
-
+app.commandLine.appendSwitch('disable-gpu');
 
 ipcMain.handle('save-file', async (event, filePath, content) => {
   return fs.promises.writeFile(filePath, content);
@@ -172,5 +178,5 @@ ipcMain.handle('read-file', async (event, filePath) => {
 });
 
 if (!fs.existsSync(TEMP_DIR)) {
-    fs.mkdirSync(TEMP_DIR);
+  fs.mkdirSync(TEMP_DIR);
 }
